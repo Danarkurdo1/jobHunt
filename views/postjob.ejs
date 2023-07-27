@@ -1,0 +1,174 @@
+<%- include('partials/header.ejs') %> 
+
+
+<!-- job filter section stars  -->
+
+
+
+<section class="job-filter">
+
+    <h1 class="heading">Fill Your Job Details</h1>
+ 
+    <form  method="post">
+       <div class="flex">
+          <div class="box">
+             <p>job title <span>*</span></p>
+             <select  name="City" size="1" id="job" placeholder="keyword, category or company" required maxlength="20" class="input">
+                <option >Car Washing</option>
+                <option >Restaurant Cafe</option>
+                <option >Security</option>
+                <option >Shops</option>
+                <option >Car-Service</option>
+                <option >IT Designer</option>
+                <option >Delivery</option>
+                <option >Other Jobs</option>
+             </select>
+              <!-- <input type="text" name="title" placeholder="keyword, category or company" required maxlength="20" class="input">  -->
+          </div>
+          <div class="box">
+             <p>job location</p>
+             <select  name="City" size="1" placeholder="keyword, category or company" required maxlength="20" id="city" class="input">
+                <option >Sulaimaniah</option>
+                <option >Erbil</option>
+                <option >Kirkuk</option>
+                <option >Duhok</option>
+             </select>
+             
+             
+             <!-- 
+             <input type="text" name="location" placeholder="city, state or country" required maxlength="50" class="input">
+          </div> -->
+ 
+       </div>
+ 
+       <!-- view job section starts  -->
+ 
+ <section class="job-details">
+ 
+    
+ 
+    <div class="details">
+       <div class="job-info">
+          <h3>Post Your Job</h3>
+         
+            
+       </div>
+       <div class="box">
+          <input type="number" name="Salary" placeholder="Enter Salary Only IQD" id="salary" step="5000" min="50000" required maxlength="50" class="input">
+ 
+          <h3>Time</h3>
+             <select  name="City" size="1" placeholder="working-type" required maxlength="20" id="shaft" class="input">
+                <option >full-time</option>
+                <option >Day-Shaft</option>
+                <option >Night-Shaft</option>
+                <option >Midnight-Shaft</option>
+             </select>
+ 
+             
+            
+          
+          
+       </div>
+       <ul class="box">
+          <h3>Gender</h3>
+          
+          <select  name="City" size="1" placeholder="Gender" required maxlength="20" id="gender" class="input">
+             <option >Male</option>
+             <option >Female</option>
+          </select>
+ 
+          <h3>Education</h3>
+          <select  name="City" size="1"  placeholder="Education" required maxlength="20" id="education" class="input">
+             <option >Not-Nessesery</option>
+             <option >Passed-9th</option>
+             <option >Passed-12th</option>
+             <option >Diploma</option>
+             <option >bechalure</option>
+             <option >master</option>
+          </select>
+ 
+          <h3>Experience</h3>
+          <select  name="City" size="1" placeholder="experience" required maxlength="20" class="input" id="experience">
+             <option >Not-Nessesery</option>
+             <option >1 Year</option>
+             <option >2 Years</option>
+             <option >3 Years</option>
+             <option >Over than 3 Years</option>
+             
+          </select>
+ 
+ 
+ 
+          <!-- <textarea class="input"  placeholder="Discribe your requirements " id="tbuser" cols="30" rows="10"></textarea> -->
+           <!-- <input type="text" name="requirements" placeholder="Discribe your requirements"  class="input">  -->
+       </ul>
+       
+       
+       <div class="box">
+          <h3>job description</h3>
+          <textarea class="input" placeholder="Discribe your requirements " id="description" cols="30" rows="10" ></textarea>
+          
+          <input type="number" name="count" placeholder="Number of workers" id="quantity"   required maxlength="50" class="input">
+       </div>
+       <form action="" method="post" class="flex-btn">
+          <input type="button" value="Preview" name="click" id="btn1" class="btn" >
+         
+       </form>
+    </div>
+    
+ </section>
+    <br><br><br><br>
+
+
+    <section class="job-details">
+
+
+
+    <div class="details">
+       <div class="job-info">
+          <h3 id="out9"></h3>
+          
+          <p id="out8"><i class="fas fa-map-marker-alt"></i></p>
+       </div>
+       <div class="basic-details">
+          <h3>salary</h3>
+          <p id="out1"></p>
+          <h3>Time</h3>
+          <p id="out2"></p>
+          <h3>Gender</h3>
+          <p id="out3"></p>
+          <h3>Education-Needed</h3>
+          <p id="out4"></p>
+          <h3>Experience</h3>
+          <p id="out5"></p>
+          <h3>description</h3>
+          <p id="out6"> <br>
+           </p>
+           <h3>Workers Needed</h3>
+           
+           <p id="out7"></p>
+       </div>
+       
+             
+       </div>
+       <form action="" method="post" class="flex-btn">
+          <input type="submit" value="apply now" name="apply" class="btn">
+         
+       </form>
+    </div>
+ 
+ </form> 
+
+
+</section>
+
+
+ 
+
+
+<!-- view job section ends -->
+ 
+
+<!-- job filter section ends -->
+
+<%- include('partials/footer.ejs') %> 
