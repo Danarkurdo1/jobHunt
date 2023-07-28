@@ -41,9 +41,26 @@ const userSchema =new mongoose.Schema({
     password: String,
 });
 
+const jobSchema =new mongoose.Schema({
+    logo: String,
+    companyName: String,
+    jobTitle: String,
+    location: String,
+    salary: Number,
+    shift: String,
+    flexible_shifts: String,
+    dateOfPost: Date,
+    gender: String,
+    education: String,
+    experience: String,
+    jobDescription: String,
+    numberOfEmployees: Number
+});
+
 userSchema.plugin(passportLocalMongoose, {usernameField : "email"});
 
 const User = new mongoose.model("User", userSchema);
+const Job = new mongoose.model("Job", jobSchema);
 
 passport.use(User.createStrategy());
 passport.serializeUser(function(user, done) {
@@ -144,6 +161,43 @@ app.post('/register', (req, res)=>{
 
 app.get('/postjob', (req, res)=>{
     res.render('postjob', {textButton: jobs, ref:ref});
+})
+
+app.post('/postjob', (req, res)=>{
+    const jobTitle = req.body.jobTitle;
+    const jobLoc = req.body.jobLoc;
+    const Salary = req.body.Salary;
+    const shift = req.body.shift;
+    const gender = req.body.gender;
+    const education = req.body.education;
+    const experience = req.body.experience;
+    const jobDescription = req.body.jobDescription;
+    const numberOfEmployees = req.body.numberOfEmployees;
+
+
+    Job.insertMany([{
+
+        jobTitle: jobTitle,
+        jobLocation: jobLoc,
+        Salary: Salary,
+        shift: shift,
+        gender: gender,
+        education: education,
+        experience: experience,
+        jobDescription: jobDescription,
+        numberOfEmployees: numberOfEmployees
+
+    }]).then((data, err)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.redirect("/jobs");
+        }
+    });
+})
+
+app.get('/viewjob', (req, res)=>{
+    res.render('viewjob', {textButton: jobs, ref:ref});
 })
 
 app.listen(port, ()=>{

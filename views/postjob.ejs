@@ -9,12 +9,12 @@
 
     <h1 class="heading">Fill Your Job Details</h1>
  
-    <form  method="post">
+    <form action="postjob"  method="post" id="submitForm">
        <div class="flex">
           <div class="box">
              <p>job title <span>*</span></p>
-             <select  name="City" size="1" id="job" placeholder="keyword, category or company" required maxlength="20" class="input">
-                <option >Car Washing</option>
+             <select  name="jobTitle" size="1" id="job" placeholder="keyword, category or company" required maxlength="20" class="input">
+                <option selected>Car Washing</option>
                 <option >Restaurant Cafe</option>
                 <option >Security</option>
                 <option >Shops</option>
@@ -23,22 +23,15 @@
                 <option >Delivery</option>
                 <option >Other Jobs</option>
              </select>
-              <!-- <input type="text" name="title" placeholder="keyword, category or company" required maxlength="20" class="input">  -->
           </div>
           <div class="box">
              <p>job location</p>
-             <select  name="City" size="1" placeholder="keyword, category or company" required maxlength="20" id="city" class="input">
-                <option >Sulaimaniah</option>
+             <select  name="jobLoc" size="1" placeholder="keyword, category or company" required maxlength="20" id="city" class="input">
+                <option selected>Sulaimaniah</option>
                 <option >Erbil</option>
                 <option >Kirkuk</option>
                 <option >Duhok</option>
              </select>
-             
-             
-             <!-- 
-             <input type="text" name="location" placeholder="city, state or country" required maxlength="50" class="input">
-          </div> -->
- 
        </div>
  
        <!-- view job section starts  -->
@@ -54,11 +47,11 @@
             
        </div>
        <div class="box">
-          <input type="number" name="Salary" placeholder="Enter Salary Only IQD" id="salary" step="5000" min="50000" required maxlength="50" class="input">
+          <input type="number" name="salary" placeholder="Enter Salary Only IQD" id="salary" step="5000" min="50000" required maxlength="50" class="input">
  
           <h3>Time</h3>
-             <select  name="City" size="1" placeholder="working-type" required maxlength="20" id="shaft" class="input">
-                <option >full-time</option>
+             <select  name="shift" size="1" placeholder="working-type" required maxlength="20" id="shaft" class="input">
+                <option selected>full-time</option>
                 <option >Day-Shaft</option>
                 <option >Night-Shaft</option>
                 <option >Midnight-Shaft</option>
@@ -72,15 +65,15 @@
        <ul class="box">
           <h3>Gender</h3>
           
-          <select  name="City" size="1" placeholder="Gender" required maxlength="20" id="gender" class="input">
-             <option >Male</option>
+          <select  name="gender" size="1" placeholder="Gender" required maxlength="20" id="gender" class="input">
+             <option selected>Male</option>
              <option >Female</option>
           </select>
  
           <h3>Education</h3>
-          <select  name="City" size="1"  placeholder="Education" required maxlength="20" id="education" class="input">
+          <select  name="education" size="1"  placeholder="Education" required maxlength="20" id="education" class="input">
              <option >Not-Nessesery</option>
-             <option >Passed-9th</option>
+             <option selected>Passed-9th</option>
              <option >Passed-12th</option>
              <option >Diploma</option>
              <option >bechalure</option>
@@ -88,34 +81,30 @@
           </select>
  
           <h3>Experience</h3>
-          <select  name="City" size="1" placeholder="experience" required maxlength="20" class="input" id="experience">
+          <select  name="experience" size="1" placeholder="experience" required maxlength="20" class="input" id="experience">
              <option >Not-Nessesery</option>
-             <option >1 Year</option>
+             <option selected>1 Year</option>
              <option >2 Years</option>
              <option >3 Years</option>
              <option >Over than 3 Years</option>
              
           </select>
- 
- 
- 
-          <!-- <textarea class="input"  placeholder="Discribe your requirements " id="tbuser" cols="30" rows="10"></textarea> -->
-           <!-- <input type="text" name="requirements" placeholder="Discribe your requirements"  class="input">  -->
+
        </ul>
        
        
        <div class="box">
           <h3>job description</h3>
-          <textarea class="input" placeholder="Discribe your requirements " id="description" cols="30" rows="10" ></textarea>
+          <textarea name="jobDescription" class="input" placeholder="Discribe your requirements " id="description" cols="30" rows="10" ></textarea>
           
-          <input type="number" name="count" placeholder="Number of workers" id="quantity"   required maxlength="50" class="input">
+          <input type="number" name="numberOfEmployees" placeholder="Number of workers" id="quantity"   required maxlength="50" class="input">
        </div>
        <form action="" method="post" class="flex-btn">
           <input type="button" value="Preview" name="click" id="btn1" class="btn" >
          
        </form>
     </div>
-    
+   </form>
  </section>
     <br><br><br><br>
 
@@ -151,10 +140,9 @@
        
              
        </div>
-       <form action="" method="post" class="flex-btn">
-          <input type="submit" value="apply now" name="apply" class="btn">
-         
-       </form>
+       <div class="flex-btn">
+         <button type="submit" form="submitForm" name="apply" class="btn">apply now</button>
+       </div>
     </div>
  
  </form> 
@@ -170,5 +158,4 @@
  
 
 <!-- job filter section ends -->
-
 <%- include('partials/footer.ejs') %> 
