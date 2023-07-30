@@ -1,0 +1,47 @@
+<%- include('partials/header.ejs') %> 
+
+
+
+<!-- job filter section stars  -->
+
+<section class="job-filter">
+
+ <!-- all jobs section starts  -->
+ 
+ <section class="jobs-container">
+ 
+    <h1 class="heading">Filtered Jobs</h1>
+ 
+    <div class="box-container">
+ 
+        <% filterJobs.forEach(job => { %>
+            <div class="box">
+               <div class="company">
+                  <img src="/img/images/icon-1.png" alt="">
+                  <div>
+                     <h3><%= job.companyName %></h3>
+                     <p><%= job.dateOfPost %></p>
+                  </div>
+               </div>
+               <h3 class="job-title"><%= job.jobTitle %></h3>
+               <p class="location"><i class="fas fa-map-marker-alt"></i> <span><%= job.location %></span></p>
+               <div class="tags">
+                  <p><i class="fas fa-indian-rupee-sign"></i> <span><%= job.salary %></span></p>
+                  <p><i class="fas fa-briefcase"></i> <span><%= job.shift %></span></p>
+                  <p><i class="fas fa-clock"></i> <span>day shift</span></p>
+               </div>
+               <div class="flex-btn">
+                  <a href="jobs/<%= job._id %>" class="btn">view details</a>
+                  <button type="submit" class="far fa-heart" name="save"></button>
+               </div>
+            </div> 
+         <% }); %>
+
+    </div>
+ 
+ </section>
+ 
+ 
+ <!-- all jobs section ends -->
+
+ <%- include('partials/footer.ejs') %> 

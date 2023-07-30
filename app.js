@@ -46,10 +46,9 @@ const jobSchema =new mongoose.Schema({
     companyName: String,
     jobTitle: String,
     location: String,
-    salary: Number,
+    salary: String,
     shift: String,
-    flexible_shifts: String,
-    dateOfPost: Date,
+    dateOfPost: String,
     gender: String,
     education: String,
     experience: String,
@@ -103,7 +102,37 @@ app.get('/about', (req, res)=>{
 })
 
 app.get('/jobs', (req, res)=>{
-    res.render('jobs', {textButton: jobs, ref:ref});
+    Job.find().exec().then((allJobs, err)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs});
+        }
+    });
+})
+
+app.get('/jobs/:id', (req, res)=>{
+    const id = req.params.id;
+    Job.findById({_id: id}).exec().then((job, err)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.render("viewjob", {textButton: jobs, ref:ref, job: job});
+        }
+    })
+})
+
+app.post('/jobs/filteredjobs', (req, res)=>{
+    const location = req.body.location;
+    const jobTitle = req.body.jobTitle;
+    Job.find({location: location, jobTitle: jobTitle}).exec().then((filterJobs, err)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.render("filteredjobs", {textButton: jobs, ref:ref, filterJobs: filterJobs});
+        }
+    });
+    
 })
 
 app.get('/contact', (req, res)=>{
@@ -164,28 +193,33 @@ app.get('/postjob', (req, res)=>{
 })
 
 app.post('/postjob', (req, res)=>{
+    const companyName = req.body.companyName;
     const jobTitle = req.body.jobTitle;
     const jobLoc = req.body.jobLoc;
-    const Salary = req.body.Salary;
+    const salary = req.body.salary;
     const shift = req.body.shift;
     const gender = req.body.gender;
     const education = req.body.education;
     const experience = req.body.experience;
     const jobDescription = req.body.jobDescription;
     const numberOfEmployees = req.body.numberOfEmployees;
+    var todayDate = new Date().toISOString().slice(0, 10);
 
 
     Job.insertMany([{
 
+        logo:"icon-9.png",
+        companyName: companyName,
         jobTitle: jobTitle,
-        jobLocation: jobLoc,
-        Salary: Salary,
+        location: jobLoc,
+        salary: salary,
         shift: shift,
         gender: gender,
         education: education,
         experience: experience,
         jobDescription: jobDescription,
-        numberOfEmployees: numberOfEmployees
+        numberOfEmployees: numberOfEmployees,
+        dateOfPost: todayDate
 
     }]).then((data, err)=>{
         if(err){
@@ -196,9 +230,7 @@ app.post('/postjob', (req, res)=>{
     });
 })
 
-app.get('/viewjob', (req, res)=>{
-    res.render('viewjob', {textButton: jobs, ref:ref});
-})
+
 
 app.listen(port, ()=>{
     console.log("server started...");
