@@ -7,6 +7,7 @@ const session = require('express-session');
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose');
 const findOrCreate = require('mongoose-findorcreate');
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 const port = process.env.port || 3000;
 mongoose.set('strictQuery', false); 
 
@@ -39,6 +40,7 @@ const userSchema =new mongoose.Schema({
     email: String,
     userType: String,
     password: String,
+    googleId: String
 });
 
 const jobSchema =new mongoose.Schema({
@@ -57,6 +59,7 @@ const jobSchema =new mongoose.Schema({
 });
 
 userSchema.plugin(passportLocalMongoose, {usernameField : "email"});
+userSchema.plugin(findOrCreate);
 
 const User = new mongoose.model("User", userSchema);
 const Job = new mongoose.model("Job", jobSchema);
@@ -70,6 +73,25 @@ passport.deserializeUser(function(user, done) {
   done(null, user);
 });
 
+// Google oauth
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/jobs"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    // let img = profile._json.picture;
+    // img = img.substring(0, img.length - 6);
+    User.findOrCreate({ googleId: profile.id,
+                        userType: "employee",
+                        name: profile.displayName,
+                        email: profile._json.email,
+                        }, function (err, user) {
+      console.log(profile);
+      return cb(err, user);
+    });
+  }
+  ));
 
 
 
@@ -82,18 +104,36 @@ app.get('/', (req, res)=>{
             console.log(err);
           }else{
             User.findById({_id: req.user._id}).select("_id, userType").then((user, err)=>{
-                if(user.userType === "employer"){
+                if(user.userType === "admin"){
                     ref = "postjob";
                     jobs = "Post Job";
-                    res.render('home', {textButton: jobs, ref: ref});
+                    Job.find().limit(6).then((lastJobs, err)=>{
+                        if(err){
+                            console.log(err);
+                        }else{
+                            res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs});
+                        }
+                    });
                 }else if(user.userType === "employee"){
-                    res.render('home', {textButton: jobs, ref:ref});
+                    Job.find().limit(6).then((lastJobs, err)=>{
+                        if(err){
+                            console.log(err);
+                        }else{
+                            res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs});
+                        }
+                    });
                 }
             });
           }
         })
       }else{
-        res.render('home', {textButton: jobs, ref:ref});
+        Job.find().limit(6).then((lastJobs, err)=>{
+            if(err){
+                console.log(err);
+            }else{
+                res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs});
+            }
+        });
       }
 })
 
@@ -140,11 +180,24 @@ app.get('/contact', (req, res)=>{
 })
 
 app.get('/login', (req, res)=>{
-    res.render('login', {textButton: jobs, ref:ref});
+
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
+            console.log(err);
+          }else{
+            res.redirect('/');
+          }
+        })
+      }else{
+        res.render('login', {textButton: jobs, ref:ref});
+      }
 })
 
 
 app.post('/login', (req, res)=>{
+
     const user = new User({
         username: req.body.email,
         password: req.body.password
@@ -163,20 +216,43 @@ app.post('/login', (req, res)=>{
       });
 })
 
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['email', 'profile'] }));
+
+app.get('/auth/google/jobs', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/jobs');
+  });
+
 
 app.get('/register', (req, res)=>{
-    res.render('register', {textButton: jobs, ref:ref});
+
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
+            console.log(err);
+          }else{
+            res.redirect('/');
+          }
+        })
+      }else{
+        res.render('register', {textButton: jobs, ref:ref, errText: req.session.errText});
+        }
 })
 
 
 app.post('/register', (req, res)=>{
     User.register({
         name: req.body.name,
-        userType: req.body.userType,
+        userType: "employee",
         email: req.body.email,
     }, req.body.password, (err, user)=>{
         if(err){
           console.log(err);
+          req.session.errText = "This User Is All ready Exist, please try another email."
           res.redirect('/register');
         }else{
           passport.authenticate('local')(req, res, ()=>{
