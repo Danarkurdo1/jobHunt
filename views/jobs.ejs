@@ -65,10 +65,14 @@
                <p><i class="fas fa-briefcase"></i> <span><%= job.shift %></span></p>
                <p><i class="fas fa-clock"></i> <span>day shift</span></p>
             </div>
-            <div class="flex-btn">
-               <a href="jobs/<%= job._id %>" class="btn">view details</a>
-               <button type="submit" class="far fa-heart" name="save"></button>
-            </div>
+            <form action="/jobs" method="post" >
+               <div class="flex-btn">
+                  <a href="jobs/<%= job._id %>" class="btn">view details</a>
+                  <input style="display: none;" name="jobId" type="text" value=<%= job._id %>>
+                  <!-- <button type="submit" class="logutBtn" name="save" <%= deleteBtnDsip %> style="display: none;"><i class="fa-solid fa-square-xmark fa-2xl" style="color: #e53e3e;"></i></button> -->
+                  <button type="submit" class="far fa-heart" name="save"></button>
+               </div>
+            </form>
          </div> 
       <% }); %>
 

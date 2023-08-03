@@ -14,7 +14,7 @@ mongoose.set('strictQuery', false);
 let ref = "jobs";
 let jobs = "Find Job";
 const logoutHtml = 'style="display: inline;"';
-
+const deleteBtnDsip = logoutHtml;
 
 // serve static Folder
 const path = require('path');
@@ -36,12 +36,17 @@ app.use(passport.session());
 
 mongoose.connect(process.env.LOCAL_DATABASE + "/jobhunt", {useNewUrlParser: true});
 
+const favoriteSchema = new mongoose.Schema({
+    jobId: String,
+})
+
 const userSchema =new mongoose.Schema({
     name: String,
     email: String,
     userType: String,
     password: String,
-    googleId: String
+    googleId: String,
+    favorites: [favoriteSchema],
 });
 
 const jobSchema =new mongoose.Schema({
@@ -78,17 +83,14 @@ passport.deserializeUser(function(user, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/jobs"
+    callbackURL: process.env.callbackURL
   },
   function(accessToken, refreshToken, profile, cb) {
-    // let img = profile._json.picture;
-    // img = img.substring(0, img.length - 6);
     User.findOrCreate({ googleId: profile.id,
                         userType: "employee",
                         name: profile.displayName,
                         email: profile._json.email,
                         }, function (err, user) {
-      console.log(profile);
       return cb(err, user);
     });
   }
@@ -161,13 +163,23 @@ app.get('/jobs', (req, res)=>{
           if(err){
             console.log(err);
           }else{
-            Job.find().exec().then((allJobs, err)=>{
-                if(err){
-                    console.log(err);
-                }else{
-                    res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml});
-                }
-            });
+            if(user.userType === "admin"){
+                Job.find().exec().then((allJobs, err)=>{
+                    if(err){
+                        console.log(err);
+                    }else{
+                        res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml, deleteBtnDsip: deleteBtnDsip, userType: user.userType});
+                    }
+                });
+            }else{
+                Job.find().exec().then((allJobs, err)=>{
+                    if(err){
+                        console.log(err);
+                    }else{
+                        res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml, deleteBtnDsip: "", userType: ""});
+                    }
+                });
+            }
           }
         })
       }else{
@@ -175,10 +187,28 @@ app.get('/jobs', (req, res)=>{
             if(err){
                 console.log(err);
             }else{
-                res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:""});
+                res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:"", deleteBtnDsip: "", userType: ""});
             }
         });
       }
+})
+
+app.post('/jobs', (req, res)=>{
+    const job = {
+        jobId: req.body.jobId
+    }
+    User.findById({_id: req.user._id}).then((foundUser, err)=>{
+        if(err){
+          console.log(err);
+        }else{
+            foundUser.favorites.push(job);
+            foundUser.save().then(()=>{
+                res.redirect("/jobs");
+            }).catch((err)=>{
+                console.log(err);
+            })
+        }
+      })
 })
 
 app.get('/jobs/:id', (req, res)=>{
@@ -228,6 +258,18 @@ app.post('/jobs/filteredjobs', (req, res)=>{
     
 })
 
+app.post('/delete', (req, res)=>{
+    console.log(req.body.deleteJobId);
+    const id = req.body.deleteJobId;
+    Job.findByIdAndRemove(id).then((result, err)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.redirect('/jobs');
+        }
+    })
+})
+
 app.get('/favorite', (req, res)=>{
     if(req.isAuthenticated()){
         console.log('authenticated')
@@ -235,13 +277,25 @@ app.get('/favorite', (req, res)=>{
           if(err){
             console.log(err);
           }else{
-            res.render('favorite', {textButton: jobs, ref:ref, logoutHtml:logoutHtml});
+            const favJobs = user.favorites;
+            const ids = [];
+            favJobs.map((job)=>{
+                ids.push(job.jobId);
+            })
+            Job.find({'_id': { $in: ids}}).then((foundJobs, err)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    res.render('favorite', {textButton: jobs, ref:ref, logoutHtml:logoutHtml, favJobs: foundJobs});
+                }
+            });
           }
         })
       }else{
         res.render('favorite', {textButton: jobs, ref:ref, logoutHtml:""});
       }
 })
+
 
 app.get('/contact', (req, res)=>{
 
@@ -359,12 +413,12 @@ app.get('/postjob', (req, res)=>{
           if(err){
             console.log(err);
           }else{
-            res.render('postjob', {textButton: jobs, ref:ref});
+            res.render('postjob', {textButton: jobs, ref:ref, logoutHtml:"logoutHtml"});
           }
         })
       }else{
-        res.render('postjob', {textButton: jobs, ref:ref});
-        }
+        res.redirect('/login')
+    }
 })
 
 app.post('/postjob', (req, res)=>{
