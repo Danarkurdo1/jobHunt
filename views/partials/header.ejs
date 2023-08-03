@@ -22,21 +22,26 @@
       <div id="menu-btn" class="fas fa-bars-staggered"></div>
 
       <a href="/" class="logo"><i class="fas fa-briefcase"></i> JobHunt.</a>
-
+      <form action="/logout" method="post">
       <nav class="navbar">
          <a href="/">home</a>
          <a href="about">about us</a>
          <a href="jobs">all jobs</a>
+         <a href="favorite">Favorite</a>
          <a href="contact">contact us</a>
          <a href="login">account</a>
          <a href="resume">Make CV</a>
-
+         
+            <button class="logutBtn" type="submit" <%= logoutHtml %> style="display: none;"><i class="fas fa-light fa-arrow-right-from-bracket fa-lg" style="color: #c3cada;"></i></button>
+         
       </nav>
+   </form>
 
       
 
       <a href="/<%= ref %>" class="btn" style="margin-top: 0;"><%= textButton %></a>
 
+      
    </section>
 
 </header>

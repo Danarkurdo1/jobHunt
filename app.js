@@ -13,6 +13,7 @@ mongoose.set('strictQuery', false);
 
 let ref = "jobs";
 let jobs = "Find Job";
+const logoutHtml = 'style="display: inline;"';
 
 
 // serve static Folder
@@ -111,7 +112,7 @@ app.get('/', (req, res)=>{
                         if(err){
                             console.log(err);
                         }else{
-                            res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs});
+                            res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs, logoutHtml:logoutHtml});
                         }
                     });
                 }else if(user.userType === "employee"){
@@ -119,7 +120,7 @@ app.get('/', (req, res)=>{
                         if(err){
                             console.log(err);
                         }else{
-                            res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs});
+                            res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs, logoutHtml:logoutHtml});
                         }
                     });
                 }
@@ -131,52 +132,131 @@ app.get('/', (req, res)=>{
             if(err){
                 console.log(err);
             }else{
-                res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs});
+                res.render('home', {textButton: jobs, ref: ref, lastJobs: lastJobs, logoutHtml:""});
             }
         });
       }
 })
 
 app.get('/about', (req, res)=>{
-    res.render('about', {textButton: jobs, ref:ref});
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
+            console.log(err);
+          }else{
+            res.render('about', {textButton: jobs, ref:ref, logoutHtml:logoutHtml});
+          }
+        })
+      }else{
+        res.render('about', {textButton: jobs, ref:ref, logoutHtml:""});
+      }
 })
 
 app.get('/jobs', (req, res)=>{
-    Job.find().exec().then((allJobs, err)=>{
-        if(err){
+
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
             console.log(err);
-        }else{
-            res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs});
-        }
-    });
+          }else{
+            Job.find().exec().then((allJobs, err)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml});
+                }
+            });
+          }
+        })
+      }else{
+        Job.find().exec().then((allJobs, err)=>{
+            if(err){
+                console.log(err);
+            }else{
+                res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:""});
+            }
+        });
+      }
 })
 
 app.get('/jobs/:id', (req, res)=>{
     const id = req.params.id;
-    Job.findById({_id: id}).exec().then((job, err)=>{
-        if(err){
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
             console.log(err);
-        }else{
-            res.render("viewjob", {textButton: jobs, ref:ref, job: job});
-        }
-    })
+          }else{
+            Job.findById({_id: id}).exec().then((job, err)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    res.render("viewjob", {textButton: jobs, ref:ref, job: job, logoutHtml:logoutHtml});
+                }
+            })
+          }
+        })
+      }else{
+        res.render('viewjob', {textButton: jobs, ref:ref, logoutHtml:"", logoutHtml:""});
+      }
 })
 
 app.post('/jobs/filteredjobs', (req, res)=>{
     const location = req.body.location;
     const jobTitle = req.body.jobTitle;
-    Job.find({location: location, jobTitle: jobTitle}).exec().then((filterJobs, err)=>{
-        if(err){
+
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
             console.log(err);
-        }else{
-            res.render("filteredjobs", {textButton: jobs, ref:ref, filterJobs: filterJobs});
-        }
-    });
+          }else{
+            Job.find({location: location, jobTitle: jobTitle}).exec().then((filterJobs, err)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    res.render("filteredjobs", {textButton: jobs, ref:ref, filterJobs: filterJobs, logoutHtml:logoutHtml});
+                }
+            });
+          }
+        })
+      }else{
+        res.render("filteredjobs", {textButton: jobs, ref:ref, filterJobs: filterJobs, logoutHtml:""});
+    }
     
 })
 
+app.get('/favorite', (req, res)=>{
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
+            console.log(err);
+          }else{
+            res.render('favorite', {textButton: jobs, ref:ref, logoutHtml:logoutHtml});
+          }
+        })
+      }else{
+        res.render('favorite', {textButton: jobs, ref:ref, logoutHtml:""});
+      }
+})
+
 app.get('/contact', (req, res)=>{
-    res.render('contact', {textButton: jobs, ref:ref});
+
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
+            console.log(err);
+          }else{
+            res.render('contact', {textButton: jobs, ref:ref, logoutHtml:logoutHtml});
+          }
+        })
+      }else{
+        res.render('contact', {textButton: jobs, ref:ref, logoutHtml:""});
+      }
 })
 
 app.get('/login', (req, res)=>{
@@ -191,7 +271,7 @@ app.get('/login', (req, res)=>{
           }
         })
       }else{
-        res.render('login', {textButton: jobs, ref:ref});
+        res.render('login', {textButton: jobs, ref:ref, logoutHtml:""});
       }
 })
 
@@ -239,7 +319,7 @@ app.get('/register', (req, res)=>{
           }
         })
       }else{
-        res.render('register', {textButton: jobs, ref:ref, errText: req.session.errText});
+        res.render('register', {textButton: jobs, ref:ref, errText: req.session.errText, logoutHtml:""});
         }
 })
 
@@ -263,9 +343,28 @@ app.post('/register', (req, res)=>{
       });
 });
 
+app.post('/logout', (req, res)=>{
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        console.log("loged out");
+        res.redirect('/login');
+      });
+})
+
 
 app.get('/postjob', (req, res)=>{
-    res.render('postjob', {textButton: jobs, ref:ref});
+    if(req.isAuthenticated()){
+        console.log('authenticated')
+        User.findById({_id: req.user._id}).then((user, err)=>{
+          if(err){
+            console.log(err);
+          }else{
+            res.render('postjob', {textButton: jobs, ref:ref});
+          }
+        })
+      }else{
+        res.render('postjob', {textButton: jobs, ref:ref});
+        }
 })
 
 app.post('/postjob', (req, res)=>{

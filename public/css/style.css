@@ -952,10 +952,11 @@ section{
    font-size: 1.5rem;
 }
 
-
-
-
-
+/* logout button */
+.logutBtn{
+   background: none !important;
+   cursor: pointer;
+}
 
 
 
