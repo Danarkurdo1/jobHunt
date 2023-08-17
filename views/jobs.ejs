@@ -69,8 +69,7 @@
                <div class="flex-btn">
                   <a href="jobs/<%= job._id %>" class="btn">view details</a>
                   <input style="display: none;" name="jobId" type="text" value=<%= job._id %>>
-                  <!-- <button type="submit" class="logutBtn" name="save" <%= deleteBtnDsip %> style="display: none;"><i class="fa-solid fa-square-xmark fa-2xl" style="color: #e53e3e;"></i></button> -->
-                  <button type="submit" class="far fa-heart" name="save"></button>
+                  <button style="display: none;" <%= favBtnDisp %> type="submit" class="far fa-heart" name="save"></button>
                </div>
             </form>
          </div> 

@@ -28,13 +28,16 @@
            <h3>Workers Needed</h3>
            <p><%= job.numberOfEmployees %></p>
        </div>
-       
-             
+       <div>
+         <form action="" method="post" class="flex-btn" style="display: inline;">
+            <input type="submit" value="apply now" name="apply" class="btn">
+          </form> 
+          <form action="/delete" method="post" class="flex-btn" style="display: inline;">
+            <input type="text" style="display: none;" name="deleteJobId" value="<%= job._id %>">
+            <input type="submit" value="Delete" name="delete" <%= deleteBtnDsip %> style="display: none;" class="btn">
+          </form> 
        </div>
-       <form action="" method="post" class="flex-btn">
-          <input type="submit" value="apply now" name="apply" class="btn">
-         
-       </form>
+       </div>
     </div>
  
  </section>

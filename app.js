@@ -15,6 +15,7 @@ let ref = "jobs";
 let jobs = "Find Job";
 const logoutHtml = 'style="display: inline;"';
 const deleteBtnDsip = logoutHtml;
+const favBtnDisp = logoutHtml;
 
 // serve static Folder
 const path = require('path');
@@ -118,6 +119,8 @@ app.get('/', (req, res)=>{
                         }
                     });
                 }else if(user.userType === "employee"){
+                    ref = "jobs";
+                    jobs = "Find Job";
                     Job.find().limit(6).then((lastJobs, err)=>{
                         if(err){
                             console.log(err);
@@ -130,6 +133,8 @@ app.get('/', (req, res)=>{
           }
         })
       }else{
+        ref = "jobs";
+        jobs = "Find Job";
         Job.find().limit(6).then((lastJobs, err)=>{
             if(err){
                 console.log(err);
@@ -139,6 +144,8 @@ app.get('/', (req, res)=>{
         });
       }
 })
+
+
 
 app.get('/about', (req, res)=>{
     if(req.isAuthenticated()){
@@ -151,6 +158,8 @@ app.get('/about', (req, res)=>{
           }
         })
       }else{
+        ref = "jobs";
+        jobs = "Find Job";
         res.render('about', {textButton: jobs, ref:ref, logoutHtml:""});
       }
 })
@@ -168,26 +177,30 @@ app.get('/jobs', (req, res)=>{
                     if(err){
                         console.log(err);
                     }else{
-                        res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml, deleteBtnDsip: deleteBtnDsip, userType: user.userType});
+                        res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml, favBtnDisp: "", userType: user.userType});
                     }
                 });
-            }else{
+            }else if(user.userType === "employee"){
+                ref = "jobs";
+                jobs = "Find Job";
                 Job.find().exec().then((allJobs, err)=>{
                     if(err){
                         console.log(err);
                     }else{
-                        res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml, deleteBtnDsip: "", userType: ""});
+                        res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:logoutHtml, favBtnDisp: favBtnDisp, userType: ""});
                     }
                 });
             }
           }
         })
       }else{
+        ref = "jobs";
+        jobs = "Find Job";
         Job.find().exec().then((allJobs, err)=>{
             if(err){
                 console.log(err);
             }else{
-                res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:"", deleteBtnDsip: "", userType: ""});
+                res.render('jobs', {textButton: jobs, ref:ref, allJobs: allJobs, logoutHtml:"", favBtnDisp: "", userType: ""});
             }
         });
       }
@@ -219,17 +232,38 @@ app.get('/jobs/:id', (req, res)=>{
           if(err){
             console.log(err);
           }else{
-            Job.findById({_id: id}).exec().then((job, err)=>{
+
+            if(user.userType === "admin"){
+              Job.findById({_id: id}).exec().then((job, err)=>{
                 if(err){
                     console.log(err);
                 }else{
-                    res.render("viewjob", {textButton: jobs, ref:ref, job: job, logoutHtml:logoutHtml});
+                    res.render("viewjob", {textButton: jobs, ref:ref, job: job, logoutHtml:logoutHtml, deleteBtnDsip: deleteBtnDsip});
                 }
             })
+            }else{
+              ref = "jobs";
+              jobs = "Find Job";
+              Job.findById({_id: id}).exec().then((job, err)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    res.render("viewjob", {textButton: jobs, ref:ref, job: job, logoutHtml:logoutHtml, deleteBtnDsip: ""});
+                }
+            })
+            }
           }
         })
       }else{
-        res.render('viewjob', {textButton: jobs, ref:ref, logoutHtml:"", logoutHtml:""});
+        ref = "jobs";
+        jobs = "Find Job";
+        Job.findById({_id: id}).exec().then((job, err)=>{
+          if(err){
+              console.log(err);
+          }else{
+              res.render('viewjob', {textButton: jobs, ref:ref, job: job, logoutHtml:"", logoutHtml:"", deleteBtnDsip: ""});
+          }
+      })
       }
 })
 
@@ -253,7 +287,13 @@ app.post('/jobs/filteredjobs', (req, res)=>{
           }
         })
       }else{
-        res.render("filteredjobs", {textButton: jobs, ref:ref, filterJobs: filterJobs, logoutHtml:""});
+        Job.find({location: location, jobTitle: jobTitle}).exec().then((filterJobs, err)=>{
+          if(err){
+              console.log(err);
+          }else{
+              res.render("filteredjobs", {textButton: jobs, ref:ref, filterJobs: filterJobs, logoutHtml:""});
+          }
+      });
     }
     
 })
@@ -325,7 +365,7 @@ app.get('/login', (req, res)=>{
           }
         })
       }else{
-        res.render('login', {textButton: jobs, ref:ref, logoutHtml:""});
+        res.render('login', {textButton: jobs, ref:ref, logoutHtml:"", errTextLogin: req.session.errTextLogin});
       }
 })
 
@@ -340,6 +380,7 @@ app.post('/login', (req, res)=>{
       req.login(user, (err)=>{
         if(err){
           console.log(err);
+          // req.session.errTextLogin = "This User Is All ready Exist, please try another email."
           res.redirect('/login');
         }else{
           passport.authenticate('local')(req, res, ()=>{
